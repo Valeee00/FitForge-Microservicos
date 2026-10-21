@@ -1,0 +1,46 @@
+server:
+  port: ${PORT:8082}
+
+spring:
+  application:
+    name: progresso-service
+  datasource:
+    # Database per service: banco exclusivo do progresso-service.
+    # Padrão = memória (como no exemplo da disciplina). Para persistir no Azure,
+    # defina DB_URL=jdbc:h2:file:/home/data/progressodb;AUTO_SERVER=FALSE
+    url: ${DB_URL:jdbc:h2:mem:progressodb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE}
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+  h2:
+    console:
+      enabled: ${H2_CONSOLE:true}
+      path: /h2-console
+  jackson:
+    default-property-inclusion: always
+
+app:
+  seed: ${SEED_DATA:true}
+  timezone: ${APP_TIMEZONE:America/Sao_Paulo}
+  cors:
+    origins: ${CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*,https://*.azurestaticapps.net,https://*.azurewebsites.net,https://*.web.core.windows.net}
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
