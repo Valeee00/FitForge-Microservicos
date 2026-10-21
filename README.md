@@ -7,10 +7,10 @@ Atividade Formativa 14 — Arquitetura de Soluções Computacionais. Integrantes
 
 | Microsserviço | Aplicativo Web (Azure) | Swagger |
 |---|---|---|
-| treinos-service | https://PREENCHER-TREINOS.azurewebsites.net | `/swagger-ui.html` |
-| progresso-service | https://PREENCHER-PROGRESSO.azurewebsites.net | `/swagger-ui.html` |
+| treinos-service | https://fitforge-treinos-cchfd7b9dyf7cjgu.italynorth-01.azurewebsites.net | `/swagger-ui.html` |
+| progresso-service | https://fitforge-progresso-gvfgfua7b0dggrht.italynorth-01.azurewebsites.net | `/swagger-ui.html` |
 
-**Site do FitForge (Azure Static Web Apps):** https://PREENCHER.azurestaticapps.net
+**Site do FitForge (Azure Storage — site estático):** https://fitforgevalentin.z38.web.core.windows.net/
 
 ## Repositórios do projeto
 
