@@ -1,32 +1,27 @@
 package br.fitforge.treinos.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.FieldType;
 
 import java.math.BigDecimal;
 
 /** Exercício de uma ficha. Value object embutido na ficha (não existe sozinho). */
-@Embeddable
 public class Exercise {
 
-    @Column(name = "exercise_id", length = 80, nullable = false)
     private String id;
 
-    @Column(nullable = false, length = 80)
     private String name;
 
-    @Column(nullable = false, length = 20)
     private String muscle;
 
     private int sets;
     private int reps;
 
     /** Carga em kg (0 a 500). */
-    @Column(precision = 6, scale = 2)
+    @Field(targetType = FieldType.DECIMAL128)
     private BigDecimal load;
 
     /** Descanso em segundos. */
-    @Column(name = "rest_seconds")
     private int rest;
 
     public Exercise() {

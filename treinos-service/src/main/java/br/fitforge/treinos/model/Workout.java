@@ -1,71 +1,46 @@
 package br.fitforge.treinos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.FieldType;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-/**
- * Ficha de treino (agregado raiz). Os nomes dos campos JSON são exatamente
- * os usados pelo frontend FitForge: id, name, description, days, exercises.
- */
-@Entity
-@Table(name = "fichas")
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Document(collection = "treinos")
 public class Workout {
 
-    @Id
-    @Column(length = 80)
+    @MongoId(FieldType.STRING)
     private String id;
 
-    @Column(nullable = false, length = 80)
+    @Version
+    @JsonIgnore
+    private Long version;
+
     private String name;
-
-    @Column(nullable = false, length = 250)
     private String description = "";
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ficha_dias", joinColumns = @JoinColumn(name = "ficha_id"))
-    @OrderColumn(name = "ordem")
-    @Column(name = "dia", length = 3)
     private List<String> days = new ArrayList<>();
-
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "ficha_exercicios", joinColumns = @JoinColumn(name = "ficha_id"))
-    @OrderColumn(name = "ordem")
     private List<Exercise> exercises = new ArrayList<>();
-
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     public void prepararPersistencia() {
-    LocalDateTime agora = LocalDateTime.now();
-    if (createdAt == null) {
-        createdAt = agora;
+        LocalDateTime agora = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = agora;
+        }
+        updatedAt = agora;
     }
-    updatedAt = agora;
-}
 
     @JsonIgnore
     public BigDecimal getVolume() {
-        return exercises.stream().map(Exercise::volume).reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    @Document(collection = "treinos")
-    public class Workout {
-
-        @MongoId(FieldType.STRING)
-        private String id;
-
-        @Version
-        @JsonIgnore
-        private Long version;
+        return exercises.stream()
+                .map(Exercise::volume)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     public String getId() { return id; }
