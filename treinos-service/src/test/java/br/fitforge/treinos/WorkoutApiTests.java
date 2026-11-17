@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Testcontainers
+/** Teste de integração: API HTTP + MongoDB real (Testcontainers). */
 class WorkoutApiTests {
 
     @Container
@@ -33,6 +34,7 @@ class WorkoutApiTests {
         registry.add("spring.data.mongodb.uri", mongo::getReplicaSetUrl);
         registry.add("spring.data.mongodb.database", () -> banco);
         registry.add("app.seed", () -> true);
+        registry.add("app.servicebus.connection-string", () -> "");
     }
 
     @Autowired

@@ -1,0 +1,5 @@
+# MongoDB local para o treinos-service (o progresso-service usa H2 em memória por padrão).
+services:
+  mongo:
+    image: mongo:7
+    ports: ["27017:27017"]

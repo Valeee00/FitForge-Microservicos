@@ -4,8 +4,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * treinos-service — Bounded Context "Planejamento".
- * Dono exclusivo das fichas de treino e seus exercícios (database per service).
+ * treinos-service — Microsserviço 1 (MongoDB), Bounded Context "Planejamento".
+ *
+ * Arquitetura Hexagonal (Ports & Adapters):
+ *   domain      → regras de negócio puras (Workout, Exercise)
+ *   application → casos de uso + portas (in/out)
+ *   adapter     → HTTP (in/web), Service Bus (in/messaging, out/messaging), MongoDB (out/persistence)
+ *   config      → composição (liga portas e adaptadores)
  */
 @SpringBootApplication
 public class TreinosApplication {

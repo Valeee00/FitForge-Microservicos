@@ -6,13 +6,24 @@ spring:
     name: treinos-service
   data:
     mongodb:
-      uri: "${MONGODB_URI}"
+      # Atlas: mongodb+srv://usuario:senha@cluster.xxxxx.mongodb.net/?retryWrites=true&w=majority
+      uri: "${MONGODB_URI:mongodb://localhost:27017}"
       database: "${MONGODB_DATABASE:fitforge-treinos}"
   jackson:
     default-property-inclusion: always
+    serialization:
+      write-dates-as-timestamps: false
 
 app:
   seed: ${SEED_DATA:true}
+  timezone: ${APP_TIMEZONE:America/Sao_Paulo}
+  openapi:
+    server-url: ${OPENAPI_SERVER_URL:}
+  servicebus:
+    # Vazia = mensageria desligada (execução local/testes)
+    connection-string: ${SERVICEBUS_CONNECTION_STRING:}
+    fila-fichas: ${SERVICEBUS_FILA_FICHAS:fichas-eventos}
+    fila-sessoes: ${SERVICEBUS_FILA_SESSOES:sessoes-eventos}
   cors:
     origins: ${CORS_ORIGINS:http://localhost:*,http://127.0.0.1:*,https://*.azurestaticapps.net,https://*.azurewebsites.net,https://*.web.core.windows.net}
 
