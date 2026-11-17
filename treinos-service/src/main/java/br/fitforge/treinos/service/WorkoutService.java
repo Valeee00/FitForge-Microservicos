@@ -10,8 +10,9 @@ import br.fitforge.treinos.model.Dominio;
 import br.fitforge.treinos.model.Exercise;
 import br.fitforge.treinos.model.Workout;
 import br.fitforge.treinos.repository.WorkoutRepository;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -27,7 +28,6 @@ public class WorkoutService {
         this.repository = repository;
     }
 
-    @Transactional(readOnly = true)
     public List<Workout> listar(String dia, String busca) {
         if (dia != null && !dia.isBlank() && !Dominio.DIAS.contains(dia)) {
             throw new RegraNegocioException("Dia inválido. Use: " + String.join(", ", Dominio.DIAS));
@@ -40,14 +40,12 @@ public class WorkoutService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public Workout buscar(String id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Ficha não encontrada: " + id));
     }
 
     /** Cria a ficha. O frontend pode enviar o próprio id (UUID); se não enviar, o serviço gera. */
-    @Transactional
     public Workout criar(WorkoutRequest req) {
         String id = (req.id() == null || req.id().isBlank()) ? UUID.randomUUID().toString() : req.id().trim();
         if (repository.existsById(id)) {
@@ -56,20 +54,27 @@ public class WorkoutService {
         Workout w = new Workout();
         w.setId(id);
         aplicar(w, req);
-        return repository.save(w);
+        try {
+            return repository.insert(w);
+        } catch (DuplicateKeyException exception) {
+            throw new ConflitoException("Já existe uma ficha com o id " + id);
+        }
     }
 
-    @Transactional
     public Workout atualizar(String id, WorkoutRequest req) {
         if (req.id() != null && !req.id().isBlank() && !req.id().equals(id)) {
             throw new RegraNegocioException("O id do corpo difere do id da URL.");
         }
         Workout w = buscar(id);
         aplicar(w, req);
-        return repository.save(w);
+        try {
+            return repository.save(w);
+        } catch (OptimisticLockingFailureException exception) {
+            throw new ConflitoException(
+                    "A ficha foi alterada por outra requisição. Atualize e tente novamente.");
+        }
     }
 
-    @Transactional
     public void excluir(String id) {
         if (!repository.existsById(id)) {
             throw new RecursoNaoEncontradoException("Ficha não encontrada: " + id);
@@ -79,7 +84,6 @@ public class WorkoutService {
         repository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public EstatisticasDTO estatisticas() {
         List<Workout> fichas = repository.findAll();
 

@@ -7,6 +7,10 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.springframework.data.annotation.Version;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.FieldType;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 /**
  * Ficha de treino (agregado raiz). Os nomes dos campos JSON são exatamente
@@ -40,20 +44,28 @@ public class Workout {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    @PrePersist
-    void aoCriar() {
-        createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
+    public void prepararPersistencia() {
+    LocalDateTime agora = LocalDateTime.now();
+    if (createdAt == null) {
+        createdAt = agora;
     }
-
-    @PreUpdate
-    void aoAtualizar() {
-        updatedAt = LocalDateTime.now();
-    }
+    updatedAt = agora;
+}
 
     @JsonIgnore
     public BigDecimal getVolume() {
         return exercises.stream().map(Exercise::volume).reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Document(collection = "treinos")
+    public class Workout {
+
+        @MongoId(FieldType.STRING)
+        private String id;
+
+        @Version
+        @JsonIgnore
+        private Long version;
     }
 
     public String getId() { return id; }
